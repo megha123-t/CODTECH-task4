@@ -1,0 +1,29 @@
+
+import speech_recognition as sr
+import RPi.GPIO as GPIO
+
+# Set up speech recognition
+r = sr.Recognizer()
+mic = sr.Microphone()
+
+# Set up GPIO for device control
+GPIO.setmode(GPIO.BCM)
+GPIO.setup(17, GPIO.OUT)
+
+while True:
+    # Listen for speech input
+    with mic as source:
+        audio = r.listen(source)
+        try:
+            # Convert speech to text
+            text = r.recognize_google(audio)
+            print(text)
+            # Interpret command and control device
+            if text == "turn on":
+                GPIO.output(17, GPIO.HIGH)
+            elif text == "turn off":
+                GPIO.output(17, GPIO.LOW)
+        except sr.UnknownValueError:
+            print("Speech recognition could not understand audio")
+        except sr.RequestError as e:
+            print("Could not request results from Google Speech Recognition service; {0}".format(e))
